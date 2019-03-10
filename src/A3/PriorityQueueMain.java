@@ -13,16 +13,15 @@ public class PriorityQueueMain {
 		System.out.println("\nAbout to insert 1 entry with random keys into the Priority Queue!");
 //			// inserting random keys with element
 		pq.insert("person 1", randomNum());
-		pq.insert("person 1", randomNum());
-		pq.insert("person 1", randomNum());
-		pq.insert("person 1", randomNum());
-		pq.insert("person 1", randomNum());
-		pq.insert("person 1", randomNum());
-//		System.out.println(pq.insert("person 1", randomNum()));
-//		System.out.println(pq.insert("person 1", randomNum()));
+		pq.insert("person 2", randomNum());
+		pq.insert("person 3", randomNum());
+		pq.insert("person 4", randomNum());
+		pq.insert("person 5", randomNum());
+		pq.insert("person 6", randomNum());
+
 	    System.out.println("\nThe PQ is now : " + pq.text());
-//	    System.out.println(pq.remove());
-//	    System.out.println("\nThe PQ is now : " + pq.toString());
+	    pq.remove();
+	    System.out.println("\nThe PQ is now : " + pq.text());
 	
 	}
 	private static int randomNum() {

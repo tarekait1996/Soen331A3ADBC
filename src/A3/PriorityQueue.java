@@ -3,6 +3,12 @@ import java.util.*;
 import java.util.Comparator;
 import be.ac.ua.ansymo.adbc.annotations.*;
 
+
+//@invariant	({
+//				"$this.priorityArray.size() >= 0",
+//				"$this.capacity > 0",
+//				//"$this.priorityArray.size() <= $this.capacity"
+//	         })
 public class PriorityQueue<V,K> {
 	
 	private Comparator<K> comp;
@@ -10,7 +16,11 @@ public class PriorityQueue<V,K> {
 	ArrayList <PQEntry<V,K>> priorityArray;
 	private int size = 0; // setting intial size
 
-	
+	@requires ({"capacity > 0"})
+	@ensures	({
+					//s"$this.priorityArray != null",
+					"$this.capacity > 0"
+    })
 	public PriorityQueue(int capacity) {
 		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
 		
@@ -49,7 +59,15 @@ public class PriorityQueue<V,K> {
 			return topEntry;
 		}
 	}
-
+	@requires	({
+		"key != null",
+		"value != null"
+//		"$this.isFull() == false"
+	})
+	@ensures	({
+			//"$this.priorityArray.contains((value, key))",
+			"$this.size() == $old($this.size()) + 1"
+	})
 	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
 		/**
 		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
