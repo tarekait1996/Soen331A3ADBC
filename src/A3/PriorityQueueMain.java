@@ -7,7 +7,7 @@ public class PriorityQueueMain {
 		System.out.println("Creating a new Priority Queue ...");
 			
 		// instantiating a PQ with default constructor
-		PriorityQueue<String, Integer> pq = new PriorityQueue<String, Integer>();
+		PriorityQueue<String, Integer> pq = new PriorityQueue<String, Integer>(5);
 		
 		System.out.println("\nFlexible Priority Queue created");			
 		System.out.println("\nAbout to insert 1 entry with random keys into the Priority Queue!");

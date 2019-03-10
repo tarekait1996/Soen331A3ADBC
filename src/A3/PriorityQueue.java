@@ -2,16 +2,10 @@ package A3;
 import java.util.*;
 import java.util.Comparator;
 import be.ac.ua.ansymo.adbc.annotations.*;
-//import A3.PQEntry;
-//import A3.minComparator;
 
 // invariant of the class
 
-@invariant({
-	"$this.size() >= 0",
-	"$this.capacity > 0",
-	"$this.size() <= $this.capacity"
-	})
+
 public class PriorityQueue<V,K> {
 	
 	private Comparator<K> comp;
@@ -20,21 +14,22 @@ public class PriorityQueue<V,K> {
 	private int size = 0; // setting intial size
 	
 	//constructor 
-	@requires ({"capacity > 0"})
-	@ensures	({
-					"$this.priorityArray != null",
-					"$this.capacity > 0"
-    })
+//	@requires ({"capacity > 0"})
+//	@ensures	({
+//					"$this.priorityArray != null",
+//					"$this.capacity > 0"
+//    })
 	public PriorityQueue(int capacity) {
 		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
 		this.capacity = capacity;
+		comp = (Comparator<K>) new minComparator();
 	}
-	@requires({"$this.isEmpty() == false"})
-	@ensures ({
-				"$topEntry != null",
-				"$topEntry == $old($this.priorityArray.get(0))",
-				"$this.size() == $old($this.size()) - 1"
-	})
+//	@requires({"$this.isEmpty() == false"})
+//	@ensures ({
+//				"$topEntry != null",
+//				"$topEntry == $old($this.priorityArray.get(0))",
+//				"$this.size() == $old($this.size()) - 1"
+//	})
 	public PQEntry<V,K> remove(){
 		/**
 		 * removes and returns the entry (a key, value pair) with the smallest
@@ -64,15 +59,15 @@ public class PriorityQueue<V,K> {
 			return topEntry;
 		}
 	}
-	@requires	({
-		"value != null",
-		"key != null",
-		"$this.capacity > size"
-	})
-	@ensures	({
-		"$this.priorityArray.contains((value, key))",
-		"$this.size() == $old($this.size()) + 1"
-	})
+//	@requires	({
+//		"value != null",
+//		"key != null",
+//		"$this.capacity > size"
+//	})
+//	@ensures	({
+//		"$this.priorityArray.contains((value, key))",
+//		"$this.size() == $old($this.size()) + 1"
+//	})
 	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
 		/**
 		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
@@ -81,7 +76,7 @@ public class PriorityQueue<V,K> {
 		checkKey(key);
 		// create an entry based on data provided
 		PQEntry<V,K> newest = new PQEntry<>(value,key);
-
+		priorityArray.add(size, newest);
 		// reorder the heap now based on upheap starting 
 		upheap(size);
 		
