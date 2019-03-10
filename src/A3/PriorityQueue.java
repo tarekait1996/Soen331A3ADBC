@@ -4,11 +4,13 @@ import java.util.Comparator;
 import be.ac.ua.ansymo.adbc.annotations.*;
 
 
-//@invariant	({
-//				"$this.priorityArray.size() >= 0",
-//				"$this.capacity > 0",
-//				//"$this.priorityArray.size() <= $this.capacity"
-//	         })
+@invariant	({
+				"$this.size() >= 0",
+				"$this.capacity > 0",
+				//"$this.size() <= $this.capacity" 
+				//NOT SURE CC PUT IT BUT ARRALIST TAKE CARE OF THAT AND WE CANNOT ACCESS 
+				//CAPACITY OF LINKED LINKED LIST SO HOW DOEWE UPDATE LOCAL CAPACITY?????
+	         })
 public class PriorityQueue<V,K> {
 	
 	private Comparator<K> comp;
@@ -28,7 +30,12 @@ public class PriorityQueue<V,K> {
 		
 		comp = (Comparator<K>) new minComparator();
 	}
-
+	@requires({"$this.isEmpty() == false"})
+	@ensures ({
+				"$result != null",
+				"$result == $old($this.min())",
+				"$this.size() == $old($this.size()) - 1"
+	})
 	public PQEntry<V,K> remove(){
 		/**
 		 * removes and returns the entry (a key, value pair) with the smallest
@@ -145,7 +152,7 @@ public class PriorityQueue<V,K> {
         }
 		
 	}
-	private boolean isEmpty() {
+	public boolean isEmpty() {
 		return size == 0;
 	}
 	public int size() {
