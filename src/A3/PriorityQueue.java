@@ -1,21 +1,40 @@
 package A3;
+import java.util.*;
 import java.util.Comparator;
 import be.ac.ua.ansymo.adbc.annotations.*;
+//import A3.PQEntry;
+//import A3.minComparator;
 
-import A3.PQEntry;
-import A3.minComparator;
-@invariant("$this.size > 0")
+// invariant of the class
+
+@invariant({
+	"$this.size() >= 0",
+	"$this.capacity > 0",
+	"$this.size() <= $this.capacity"
+	})
 public class PriorityQueue<V,K> {
+	
 	private Comparator<K> comp;
 	public int capacity = 5 ;// initially 5 elements capacity
-	private Comparator<K>specialMincomp;
-	PQEntry<V,K>[] priorityArray = new PQEntry[capacity];
+	ArrayList <PQEntry<V,K>> priorityArray;
 	private int size = 0; // setting intial size
 	
-	public PriorityQueue() { 
-		// initially set the comparator to min as it is a min heap 
-		comp = (Comparator<K>) new minComparator();
-	 }
+	//constructor 
+	@requires ({"capacity > 0"})
+	@ensures	({
+					"$this.priorityArray != null",
+					"$this.capacity > 0"
+    })
+	public PriorityQueue(int capacity) {
+		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
+		this.capacity = capacity;
+	}
+	@requires({"$this.isEmpty() == false"})
+	@ensures ({
+				"$topEntry != null",
+				"$topEntry == $old($this.priorityArray.get(0))",
+				"$this.size() == $old($this.size()) - 1"
+	})
 	public PQEntry<V,K> remove(){
 		/**
 		 * removes and returns the entry (a key, value pair) with the smallest
@@ -29,10 +48,10 @@ public class PriorityQueue<V,K> {
 			PQEntry<V,K> topEntry = min();
 			
 				// set the top of the array to be the last entry of the heap
-			priorityArray[0] = priorityArray[size-1];
+			priorityArray.set(0, priorityArray.get(size-1));
 			
 				// setting the last entry to null in order to get rid of it
-			priorityArray[size-1] = null;
+			priorityArray.set(size-1,null);
 			
 			size--;
 			
@@ -45,6 +64,15 @@ public class PriorityQueue<V,K> {
 			return topEntry;
 		}
 	}
+	@requires	({
+		"value != null",
+		"key != null",
+		"$this.capacity > size"
+	})
+	@ensures	({
+		"$this.priorityArray.contains((value, key))",
+		"$this.size() == $old($this.size()) + 1"
+	})
 	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
 		/**
 		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
@@ -53,18 +81,7 @@ public class PriorityQueue<V,K> {
 		checkKey(key);
 		// create an entry based on data provided
 		PQEntry<V,K> newest = new PQEntry<>(value,key);
-		// if no more space in array, it will automatically extend
-		if (size() == capacity) {
-			capacity *= 2; //doubling strategy
-			PQEntry<V,K>[] new_array = new PQEntry[capacity];
-			for(int i =0; i < size; i++) {
-				new_array[i] = priorityArray[i];
-			}
-			priorityArray = new_array;
-		}
-		// end of extension  of array
-		// add entry into the array
-		priorityArray[size] = newest;
+
 		// reorder the heap now based on upheap starting 
 		upheap(size);
 		
@@ -88,10 +105,10 @@ public class PriorityQueue<V,K> {
 		 */
 		        if (i != 0) {
 		            int p = (i-1)/2;
-		                if (comp.compare(priorityArray[p].getKey(),priorityArray[i].getKey()) > 0) {
-		                    PQEntry<V,K> tmp = priorityArray[p];
-		                    priorityArray[p] = priorityArray[i];
-		                    priorityArray[i] = tmp;
+		                if (comp.compare(priorityArray.get(p).getKey(),priorityArray.get(i).getKey()) > 0) {
+		                    PQEntry<V,K> tmp = priorityArray.get(p);
+		                    priorityArray.set(p, priorityArray.get(i));
+		                    priorityArray.set(i, tmp);
 		                    upheap(p);
 		            }
 		        }
@@ -115,17 +132,17 @@ public class PriorityQueue<V,K> {
         //otherwise check which one of left or right has priority and assign a
         else {
         		// for min it means if left < right 
-            if (comp.compare(priorityArray[leftIndex].getKey(), priorityArray[rightIndex].getKey()) < 0) {
+            if (comp.compare(priorityArray.get(leftIndex).getKey(), priorityArray.get(rightIndex).getKey()) < 0) {
                 a = leftIndex;
             } else {
                 a = rightIndex;
             }
         }
         // compare the index to the child that has the best priority among the two
-        if (comp.compare(priorityArray[index].getKey(),priorityArray[a].getKey()) > 0) {//swap the value
-            PQEntry<V,K> tmp = priorityArray[a];
-            priorityArray[a] = priorityArray[index];
-            priorityArray[index] = tmp;
+        if (comp.compare(priorityArray.get(index).getKey(),priorityArray.get(a).getKey()) > 0) {//swap the value
+            PQEntry<V,K> tmp = priorityArray.get(a);
+            priorityArray.set(a,priorityArray.get(index));
+            priorityArray.set(index, tmp);
             downHeap(a);
         }
 		
@@ -147,7 +164,7 @@ public class PriorityQueue<V,K> {
         if (isEmpty()) {
             return null;
         }
-        return priorityArray[0];
+        return priorityArray.get(0);
     }
 	public String toString() {
     	
@@ -159,7 +176,7 @@ public class PriorityQueue<V,K> {
         for (int i = 0; i < size; i++) {
         	// we assume top is entry 1 and last entry is last 
             sb.append("Entry " + (i+1) + " =>");
-            sb.append("[key:" + priorityArray[i].k + ", value:\"" + priorityArray[i].v + "\"], ");
+            sb.append("[key:" + priorityArray.get(i).k + ", value:\"" + priorityArray.get(i).v + "\"], ");
         }
         return sb.toString();
     }
