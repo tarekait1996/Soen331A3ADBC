@@ -3,33 +3,22 @@ import java.util.*;
 import java.util.Comparator;
 import be.ac.ua.ansymo.adbc.annotations.*;
 
-// invariant of the class
-
-
 public class PriorityQueue<V,K> {
 	
 	private Comparator<K> comp;
 	public int capacity = 5 ;// initially 5 elements capacity
 	ArrayList <PQEntry<V,K>> priorityArray;
 	private int size = 0; // setting intial size
+
 	
-	//constructor 
-//	@requires ({"capacity > 0"})
-//	@ensures	({
-//					"$this.priorityArray != null",
-//					"$this.capacity > 0"
-//    })
 	public PriorityQueue(int capacity) {
 		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
+		
 		this.capacity = capacity;
+		
 		comp = (Comparator<K>) new minComparator();
 	}
-//	@requires({"$this.isEmpty() == false"})
-//	@ensures ({
-//				"$topEntry != null",
-//				"$topEntry == $old($this.priorityArray.get(0))",
-//				"$this.size() == $old($this.size()) - 1"
-//	})
+
 	public PQEntry<V,K> remove(){
 		/**
 		 * removes and returns the entry (a key, value pair) with the smallest
@@ -39,19 +28,19 @@ public class PriorityQueue<V,K> {
 			return null;
 		}
 		else {
-				// initializing a new entry which is set to be equal to top of the heap
+			// initializing a new entry which is set to be equal to top of the heap
 			PQEntry<V,K> topEntry = min();
 			
-				// set the top of the array to be the last entry of the heap
+			// set the top of the array to be the last entry of the heap
 			priorityArray.set(0, priorityArray.get(size-1));
 			
-				// setting the last entry to null in order to get rid of it
-			priorityArray.set(size-1,null);
+			// setting the last entry to null in order to get rid of it
+			priorityArray.set(size - 1,null);
 			
 			size--;
 			
-				// reshaping (arrange order of the heap) of the heap is needed now --> using DownHeap method, going from the top to bottom
-				//we call downheap with 0 in order to start from top and go until the bottom
+			// reshaping (arrange order of the heap) of the heap is needed now --> using DownHeap method, going from the top to bottom
+			//we call downheap with 0 in order to start from top and go until the bottom
 			if (!isEmpty()) {
 				downHeap(0);
 			}
@@ -59,15 +48,7 @@ public class PriorityQueue<V,K> {
 			return topEntry;
 		}
 	}
-//	@requires	({
-//		"value != null",
-//		"key != null",
-//		"$this.capacity > size"
-//	})
-//	@ensures	({
-//		"$this.priorityArray.contains((value, key))",
-//		"$this.size() == $old($this.size()) + 1"
-//	})
+
 	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
 		/**
 		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
