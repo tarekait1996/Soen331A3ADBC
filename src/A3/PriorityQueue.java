@@ -45,6 +45,7 @@ public class PriorityQueue<V,K> {
 				downHeap(0);
 			}
 				// return the removed entry
+			System.out.println("Just removed entry [key: \""+ topEntry.k +"\", value: \""+topEntry.v+"\"] out of the PriorityQueue");
 			return topEntry;
 		}
 	}
@@ -57,12 +58,13 @@ public class PriorityQueue<V,K> {
 		checkKey(key);
 		// create an entry based on data provided
 		PQEntry<V,K> newest = new PQEntry<>(value,key);
+		System.out.println("Just inserted entry [key: \""+ newest.k +"\", value: \""+newest.v+"\"] into the PriorityQueue");
 		priorityArray.add(size, newest);
 		// reorder the heap now based on upheap starting 
 		upheap(size);
 		
 		size ++;
-		
+
 		return newest;
 	}
 	protected boolean checkKey(K key) throws IllegalArgumentException { 
@@ -71,9 +73,11 @@ public class PriorityQueue<V,K> {
 		 */
 		try { 
 			return (comp.compare(key,key) == 0); // see if key can be compared to itself
+			
 		} catch (ClassCastException e) { 
 			throw new IllegalArgumentException("Incompatible key");
 		}
+		
 	}
 	private void upheap(int i) {
 		/**
@@ -143,6 +147,20 @@ public class PriorityQueue<V,K> {
         return priorityArray.get(0);
     }
 	public String toString() {
+    	
+    	/**
+    	 * this is a method that returns a string containing the informations about the priorityQueue
+    	 */
+        StringBuilder sb = new StringBuilder();
+        
+        for (int i = 0; i < size; i++) {
+        	// we assume top is entry 1 and last entry is last 
+            sb.append("Entry " + (i+1) + " =>");
+            sb.append("[key:" + priorityArray.get(i).k + ", value:\"" + priorityArray.get(i).v + "\"], ");
+        }
+        return sb.toString();
+    }
+	public String text() {
     	
     	/**
     	 * this is a method that returns a string containing the informations about the priorityQueue

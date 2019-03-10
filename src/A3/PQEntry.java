@@ -13,6 +13,6 @@ public class PQEntry<V,K> implements Entry<V,K> {
 	  protected void setKey(K key) { k = key; } 
 	   protected void setValue(V value) { v = value; } 
 	   public String toString() {
-		   return "[key: "+ k +", value: \""+v+"\"]";
+		   return "[key: \"+ k +\", value: \\\"\"+v+\"\\\"]";
 	   }
 } 
