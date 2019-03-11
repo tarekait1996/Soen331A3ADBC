@@ -5,36 +5,62 @@ import be.ac.ua.ansymo.adbc.annotations.*;
 
 
 @invariant	({
-				"$this.size() >= 0",
+				"$this.priorityArray.size() >=0",
 				"$this.capacity > 0",
-				//"$this.size() <= $this.capacity" 
-				//NOT SURE CC PUT IT BUT ARRALIST TAKE CARE OF THAT AND WE CANNOT ACCESS 
-				//CAPACITY OF LINKED LINKED LIST SO HOW DOEWE UPDATE LOCAL CAPACITY?????
+				"$this.priorityArray.size() <= $this.capacity",
+				"$this.priorityArray.size() == $this.getSize()"
 	         })
 public class PriorityQueue<V,K> {
 	
 	private Comparator<K> comp;
 	public int capacity = 5 ;// initially 5 elements capacity
 	ArrayList <PQEntry<V,K>> priorityArray;
-	private int size = 0; // setting intial size
+	private int size = 0; // setting initial size
 
 	@requires ({"capacity > 0"})
 	@ensures	({
-					//s"$this.priorityArray != null",
+//					"$this.priorityArray != null",
 					"$this.capacity > 0"
     })
 	public PriorityQueue(int capacity) {
 		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
-		
 		this.capacity = capacity;
-		
+		this.size = 0;
 		comp = (Comparator<K>) new minComparator();
 	}
+	
+	@requires	({
+			"key != null",
+			"value != null",
+			"$this.getSize() < $this.capacity"
+	})
+	@ensures	({
+			"$this.priorityArray.contains((value, key))",
+			"$this.getSize() == $old($this.getSize()) + 1"
+	})
+	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
+		/**
+		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
+		 */
+		// checking if the keys are comparable and compatible
+		checkKey(key);
+		// create an entry based on data provided
+		PQEntry<V,K> newest = new PQEntry<>(value,key);
+		System.out.println("Just inserted entry [key: \""+ newest.k +"\", value: \""+newest.v+"\"] into the PriorityQueue");
+		priorityArray.add(size, newest);
+		// reorder the heap now based on upheap starting 
+		upheap(size);
+		
+		size ++;
+
+		return newest;
+	}
+	
 	@requires({"$this.isEmpty() == false"})
 	@ensures ({
 				"$result != null",
 				"$result == $old($this.min())",
-				"$this.size() == $old($this.size()) - 1"
+				"$this.getSize() == $old($this.getSize()) - 1"
 	})
 	public PQEntry<V,K> remove(){
 		/**
@@ -66,32 +92,22 @@ public class PriorityQueue<V,K> {
 			return topEntry;
 		}
 	}
-	@requires	({
-		"key != null",
-		"value != null"
-//		"$this.isFull() == false"
-	})
-	@ensures	({
-			//"$this.priorityArray.contains((value, key))",
-			"$this.size() == $old($this.size()) + 1"
-	})
-	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
-		/**
-		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
-		 */
-		// checking if the keys are comparable and compatible
-		checkKey(key);
-		// create an entry based on data provided
-		PQEntry<V,K> newest = new PQEntry<>(value,key);
-		System.out.println("Just inserted entry [key: \""+ newest.k +"\", value: \""+newest.v+"\"] into the PriorityQueue");
-		priorityArray.add(size, newest);
-		// reorder the heap now based on upheap starting 
-		upheap(size);
-		
-		size ++;
-
-		return newest;
-	}
+	
+	@requires({
+				"$this.isEmpty() == false"
+		})
+	@ensures({
+				"$result != null ",
+				"$result == $old($this.priorityArray.get(0))"
+		})
+	public PQEntry<V, K> min() {
+    	/**
+    	 * returns the top entry, highest priority entry (with the minimum or the maximum key 
+    	 * depending on whether it is a Min or Max-priority queue, without removing the entry.
+    	 */
+        return priorityArray.get(0);
+    }
+	
 	protected boolean checkKey(K key) throws IllegalArgumentException { 
 		/**
 		 * helping function to make sure the keys are valid 
@@ -126,8 +142,8 @@ public class PriorityQueue<V,K> {
         // index of the one we are going to compare to 
         int a; 
         
-        if (rightIndex >= size()) {//no right child
-            if (leftIndex >= size()) {//no left child
+        if (rightIndex >= getSize()) {//no right child
+            if (leftIndex >= getSize()) {//no left child
                 return;
             } else {
             	//if only left child we treat a as left child
@@ -153,24 +169,15 @@ public class PriorityQueue<V,K> {
 		
 	}
 	public boolean isEmpty() {
-		return size == 0;
+		return this.priorityArray.isEmpty();
 	}
-	public int size() {
+	public int getSize() {
 		/**
 		 * returns the current number of entries in the priority queue
 		 */
-        return size;
-     }
-	public PQEntry<V, K> min() {
-    	/**
-    	 * returns the top entry (with the minimum or the maximum key depending on whether it is a Min- or 
-    	 * Max-priority queue, without removing the entry.
-    	 */
-        if (isEmpty()) {
-            return null;
-        }
-        return priorityArray.get(0);
-    }
+        return this.size;
+     }	
+
 	public String toString() {
     	
     	/**
