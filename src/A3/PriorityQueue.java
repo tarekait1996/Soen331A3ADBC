@@ -82,7 +82,7 @@ public class PriorityQueue<V,K> {
 	})
 	public boolean verifyMinOnTop() {
 		K keyOnTop = min().k;
-		for (int i= 0; i < pqArray.length; i++) {
+		for (int i= 0; i < size; i++) {
 			if (comp.compare(pqArray[i].getKey(), keyOnTop) < 0)
 			 return false;
 		}
