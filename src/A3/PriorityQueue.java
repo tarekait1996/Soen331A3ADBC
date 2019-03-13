@@ -16,6 +16,7 @@ public class PriorityQueue<V,K> {
 	public Comparator<K> comp;
 	public int capacity = 5 ;// initially 5 elements capacity
 	public ArrayList <PQEntry<V,K>> priorityArray;
+	public PQEntry<V,K>[] pqArray;
 	public int size = 0; // setting initial size
 
 //	@requires ({"capacity > 0"}) //since we have it in the invariant, i don't think we need to have this here- Narra
@@ -24,9 +25,9 @@ public class PriorityQueue<V,K> {
 //					"$this.capacity > 0" // same thing for this one - Narra
     })
 	public PriorityQueue(int capacity) {
-		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
+		pqArray= new PQEntry[capacity];
+		//this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
 		this.capacity = capacity;
-		
 		comp = (Comparator<K>) new minComparator();
 	}
 	@requires({"$this.isEmpty() == false"})
@@ -48,10 +49,12 @@ public class PriorityQueue<V,K> {
 			PQEntry<V,K> topEntry = min();
 			
 			// set the top of the array to be the last entry of the heap
-			priorityArray.set(0, priorityArray.get(size-1));
+			pqArray[0] = pqArray[size-1];
+			//priorityArray.set(0, priorityArray.get(size-1));
 			
 			// setting the last entry to null in order to get rid of it
-			priorityArray.set(size - 1,null);
+			pqArray[size - 1] = null;
+			//priorityArray.set(size - 1,null);
 			
 			size--;
 			
@@ -74,6 +77,7 @@ public class PriorityQueue<V,K> {
 			//"$this.priorityArray.contains((value, key))",
 			"$this.size() == $old($this.size()) + 1"
 	})
+	//
 	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
 		/**
 		 * Insert the (k,v) entry which is a key(k), value(v) pair to the priority queue.
@@ -109,10 +113,10 @@ public class PriorityQueue<V,K> {
 		 */
 		        if (i != 0) {
 		            int p = (i-1)/2;
-		                if (comp.compare(priorityArray.get(p).getKey(),priorityArray.get(i).getKey()) > 0) {
-		                    PQEntry<V,K> tmp = priorityArray.get(p);
-		                    priorityArray.set(p, priorityArray.get(i));
-		                    priorityArray.set(i, tmp);
+		                if (comp.compare(pqArray[p].getKey(),pqArray[i].getKey()) > 0) {
+		                    PQEntry<V,K> tmp = pqArray[p];
+		                    pqArray[p] = pqArray[i];
+		                    pqArray[i] = tmp;
 		                    upheap(p);
 		            }
 		        }
@@ -136,14 +140,14 @@ public class PriorityQueue<V,K> {
         //otherwise check which one of left or right has priority and assign a
         else {
         		// for min it means if left < right 
-            if (comp.compare(priorityArray.get(leftIndex).getKey(), priorityArray.get(rightIndex).getKey()) < 0) {
+            if (comp.compare(pqArray[leftIndex].getKey(), pqArray[rightIndex].getKey()) < 0) {
                 a = leftIndex;
             } else {
                 a = rightIndex;
             }
         }
         // compare the index to the child that has the best priority among the two
-        if (comp.compare(priorityArray.get(index).getKey(),priorityArray.get(a).getKey()) > 0) {//swap the value
+        if (comp.compare(pqArray[index].getKey(),pqArray[a].getKey()) > 0) {//swap the value
             PQEntry<V,K> tmp = priorityArray.get(a);
             priorityArray.set(a,priorityArray.get(index));
             priorityArray.set(index, tmp);
@@ -170,6 +174,7 @@ public class PriorityQueue<V,K> {
         }
         return priorityArray.get(0);
     }
+	
 	public String toString() {
     	
     	/**
@@ -180,7 +185,7 @@ public class PriorityQueue<V,K> {
         for (int i = 0; i < size; i++) {
         	// we assume top is entry 1 and last entry is last 
             sb.append("Entry " + (i+1) + " =>");
-            sb.append("[key:" + priorityArray.get(i).k + ", value:\"" + priorityArray.get(i).v + "\"], ");
+            sb.append("[key:" + pqArray[i].k + ", value:\"" + pqArray[i].v + "\"], ");
         }
         return sb.toString();
     }
@@ -194,7 +199,7 @@ public class PriorityQueue<V,K> {
         for (int i = 0; i < size; i++) {
         	// we assume top is entry 1 and last entry is last 
             sb.append("Entry " + (i+1) + " =>");
-            sb.append("[key:" + priorityArray.get(i).k + ", value:\"" + priorityArray.get(i).v + "\"], ");
+            sb.append("[key:" + pqArray[i].k + ", value:\"" + pqArray[i].v + "\"], ");
         }
         return sb.toString();
     }
