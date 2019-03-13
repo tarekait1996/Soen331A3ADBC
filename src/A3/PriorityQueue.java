@@ -94,8 +94,8 @@ public class PriorityQueue<V,K> {
 		"$this.isFull() == false"
 	})
 	@ensures	({
-			"$this.pqArray.contains(value, key)",
-			"$this.size() == $old($this.size()) + 1"
+			"$this.contains(value, key)",
+			"$this.size == $old($this.size) + 1"
 	})
 	
 	//
@@ -108,7 +108,8 @@ public class PriorityQueue<V,K> {
 		// create an entry based on data provided
 		PQEntry<V,K> newest = new PQEntry<>(value,key);
 		System.out.println("Just inserted entry [key: \""+ newest.k +"\", value: \""+newest.v+"\"] into the PriorityQueue");
-		priorityArray.add(size, newest);
+//		pqArray.add(size, newest);
+		pqArray[size] = (newest);
 		// reorder the heap now based on upheap starting 
 		upheap(size);
 		
@@ -124,7 +125,8 @@ public class PriorityQueue<V,K> {
 		return false;
 	}
 	
-	private boolean isFull() {
+
+	public boolean isFull() {
 		return size == pqArray.length;
 	}
 	
@@ -162,8 +164,8 @@ public class PriorityQueue<V,K> {
         // index of the one we are going to compare to 
         int a; 
         
-        if (rightIndex >= size()) {//no right child
-            if (leftIndex >= size()) {//no left child
+        if (rightIndex >= size) {//no right child
+            if (leftIndex >= size) {//no left child
                 return;
             } else {
             	//if only left child we treat a as left child
@@ -181,9 +183,11 @@ public class PriorityQueue<V,K> {
         }
         // compare the index to the child that has the best priority among the two
         if (comp.compare(pqArray[index].getKey(),pqArray[a].getKey()) > 0) {//swap the value
-            PQEntry<V,K> tmp = priorityArray.get(a);
-            priorityArray.set(a,priorityArray.get(index));
-            priorityArray.set(index, tmp);
+            PQEntry<V,K> tmp = pqArray[a];
+//            priorityArray.set(a,priorityArray.get(index));
+            pqArray[a] = pqArray[index];
+            pqArray[index] = tmp;
+//            priorityArray.set(index, tmp);
             downHeap(a);
         }
 		
@@ -206,7 +210,7 @@ public class PriorityQueue<V,K> {
         if (isEmpty()) {
             return null;
         }
-        return priorityArray.get(0);
+        return pqArray[0];
     }
 	
 	public String toString() {
