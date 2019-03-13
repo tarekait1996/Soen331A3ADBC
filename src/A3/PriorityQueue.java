@@ -67,8 +67,8 @@ public class PriorityQueue<V,K> {
 	}
 	@requires	({
 		"key != null",
-		"value != null"
-//		"$this.isFull() == false"
+		"value != null",
+		"$this.isFull() == false"
 	})
 	@ensures	({
 			//"$this.priorityArray.contains((value, key))",
@@ -153,6 +153,9 @@ public class PriorityQueue<V,K> {
 	}
 	public boolean isEmpty() {
 		return size == 0;
+	}
+	public boolean isFull() {
+		return this.size == this.capacity;
 	}
 	public int size() {
 		/**
