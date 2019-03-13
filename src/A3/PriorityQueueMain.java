@@ -19,9 +19,9 @@ public class PriorityQueueMain {
 		pq.insert("person 5", randomNum());
 		pq.insert("person 6", randomNum());
 
-	    System.out.println("\nThe PQ is now : " + pq.text());
+	    System.out.println("\nThe PQ is now : " + pq.toString2());
 	    pq.remove();
-	    System.out.println("\nThe PQ is now : " + pq.text());
+	    System.out.println("\nThe PQ is now : " + pq.toString2());
 	
 	}
 	private static int randomNum() {

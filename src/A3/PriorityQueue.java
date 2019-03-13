@@ -5,37 +5,48 @@ import be.ac.ua.ansymo.adbc.annotations.*;
 
 
 @invariant	({
-				"$this.size() >= 0",
-				"$this.capacity > 0",
-				//"$this.size() <= $this.capacity" 
-				//NOT SURE CC PUT IT BUT ARRALIST TAKE CARE OF THAT AND WE CANNOT ACCESS 
-				//CAPACITY OF LINKED LINKED LIST SO HOW DO WE UPDATE LOCAL CAPACITY?????
-	         })
+	"$this.size >=0",
+	"$this.capacity > 0",
+	"$this.size <= $this.capacity"
+ })
 public class PriorityQueue<V,K> {
 	
 	public Comparator<K> comp;
-	public int capacity = 5 ;// initially 5 elements capacity
-	public ArrayList <PQEntry<V,K>> priorityArray;
+	public int capacity;
 	public PQEntry<V,K>[] pqArray;
-	public int size = 0; // setting initial size
-
-//	@requires ({"capacity > 0"}) //since we have it in the invariant, i don't think we need to have this here- Narra
+	public int size = 0;
+	
 	@ensures	({
-					"$this.priorityArray != null", 
-//					"$this.capacity > 0" // same thing for this one - Narra
+					"$this.pqArray != null", 
+					"$this.capacity > 0",
+					"$this.comp != null"
+    })
+	public PriorityQueue() {
+		capacity = 5;
+		pqArray= new PQEntry[capacity];
+		comp = (Comparator<K>) new minComparator();
+	}
+
+	@requires ({"capacity > 0"})
+	@ensures	({
+					"$this.pqArray != null", 
+					"$this.capacity > 0",
+					"$this.comp != null"
     })
 	public PriorityQueue(int capacity) {
 		pqArray= new PQEntry[capacity];
-		//this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
 		this.capacity = capacity;
 		comp = (Comparator<K>) new minComparator();
 	}
+	
 	@requires({"$this.isEmpty() == false"})
 	@ensures ({
 				"$result != null",
 				"$result == $old($this.min())",
-				"$this.size() == $old($this.size()) - 1"
+				"$this.getSize() == $old($this.getSize()) - 1",
+				"$this.verifyMinOnTop() == true"
 	})
+
 	public PQEntry<V,K> remove(){
 		/**
 		 * removes and returns the entry (a key, value pair) with the smallest
@@ -50,15 +61,12 @@ public class PriorityQueue<V,K> {
 			
 			// set the top of the array to be the last entry of the heap
 			pqArray[0] = pqArray[size-1];
-			//priorityArray.set(0, priorityArray.get(size-1));
 			
 			// setting the last entry to null in order to get rid of it
 			pqArray[size - 1] = null;
-			//priorityArray.set(size - 1,null);
-			
 			size--;
 			
-			// reshaping (arrange order of the heap) of the heap is needed now --> using DownHeap method, going from the top to bottom
+			//Reshaping (arrange order of the heap) of the heap is needed now --> using DownHeap method, going from the top to bottom
 			//we call downheap with 0 in order to start from top and go until the bottom
 			if (!isEmpty()) {
 				downHeap(0);
@@ -68,15 +76,28 @@ public class PriorityQueue<V,K> {
 			return topEntry;
 		}
 	}
+	
+	@ensures	({
+		
+	})
+	public boolean verifyMinOnTop() {
+		K keyOnTop = min().k;
+		for (int i= 0; i < pqArray.length; i++) {
+			if (comp.compare(pqArray[i].getKey(), keyOnTop) < 0)
+			 return false;
+		}
+		return true;
+	}
 	@requires	({
 		"key != null",
-		"value != null"
-//		"$this.isFull() == false"
+		"value != null",
+		"$this.isFull() == false"
 	})
 	@ensures	({
-			//"$this.priorityArray.contains((value, key))",
+			"$this.pqArray.contains(value, key)",
 			"$this.size() == $old($this.size()) + 1"
 	})
+	
 	//
 	public PQEntry<V,K> insert(V value, K key) throws IllegalArgumentException{
 		/**
@@ -95,7 +116,19 @@ public class PriorityQueue<V,K> {
 
 		return newest;
 	}
-	protected boolean checkKey(K key) throws IllegalArgumentException { 
+	
+	public boolean contains(V value, K key) { 
+		for (int i =0; i < pqArray.length; i++) {
+			if (pqArray[i].k == key && pqArray[i].v == value) return true;
+		}
+		return false;
+	}
+	
+	private boolean isFull() {
+		return size == pqArray.length;
+	}
+	
+	private boolean checkKey(K key) throws IllegalArgumentException { 
 		/**
 		 * helping function to make sure the keys are valid 
 		 */
@@ -107,7 +140,7 @@ public class PriorityQueue<V,K> {
 		}
 		
 	}
-	public void upheap(int i) {
+	private void upheap(int i) {
 		/**
 		 * helping function to reorder the heap after an insert()
 		 */
@@ -121,7 +154,7 @@ public class PriorityQueue<V,K> {
 		            }
 		        }
 		    }
-	public void downHeap(int index) {
+	private void downHeap(int index) {
 		// getting the index of the left child 
         int leftIndex = (2*index) + 1;
         // getting the index of the right child
@@ -155,10 +188,11 @@ public class PriorityQueue<V,K> {
         }
 		
 	}
+	
 	public boolean isEmpty() {
 		return size == 0;
 	}
-	public int size() {
+	public int getSize() {
 		/**
 		 * returns the current number of entries in the priority queue
 		 */
@@ -189,7 +223,7 @@ public class PriorityQueue<V,K> {
         }
         return sb.toString();
     }
-	public String text() {
+	public String toString2() {
     	
     	/**
     	 * this is a method that returns a string containing the informations about the priorityQueue
