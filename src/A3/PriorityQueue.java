@@ -9,23 +9,22 @@ import be.ac.ua.ansymo.adbc.annotations.*;
 				"$this.capacity > 0",
 				//"$this.size() <= $this.capacity" 
 				//NOT SURE CC PUT IT BUT ARRALIST TAKE CARE OF THAT AND WE CANNOT ACCESS 
-				//CAPACITY OF LINKED LINKED LIST SO HOW DOEWE UPDATE LOCAL CAPACITY?????
+				//CAPACITY OF LINKED LINKED LIST SO HOW DO WE UPDATE LOCAL CAPACITY?????
 	         })
 public class PriorityQueue<V,K> {
 	
-	private Comparator<K> comp;
+	public Comparator<K> comp;
 	public int capacity = 5 ;// initially 5 elements capacity
-	ArrayList <PQEntry<V,K>> priorityArray;
-	private int size = 0; // setting intial size
+	public ArrayList <PQEntry<V,K>> priorityArray;
+	public int size = 0; // setting initial size
 
-	@requires ({"capacity > 0"})
+//	@requires ({"capacity > 0"}) //since we have it in the invariant, i don't think we need to have this here- Narra
 	@ensures	({
-					//s"$this.priorityArray != null",
-					"$this.capacity > 0"
+					"$this.priorityArray != null", 
+//					"$this.capacity > 0" // same thing for this one - Narra
     })
 	public PriorityQueue(int capacity) {
 		this.priorityArray = new ArrayList<PQEntry<V,K>>(capacity);
-		
 		this.capacity = capacity;
 		
 		comp = (Comparator<K>) new minComparator();
@@ -104,7 +103,7 @@ public class PriorityQueue<V,K> {
 		}
 		
 	}
-	private void upheap(int i) {
+	public void upheap(int i) {
 		/**
 		 * helping function to reorder the heap after an insert()
 		 */
@@ -118,7 +117,7 @@ public class PriorityQueue<V,K> {
 		            }
 		        }
 		    }
-	private void downHeap(int index) {
+	public void downHeap(int index) {
 		// getting the index of the left child 
         int leftIndex = (2*index) + 1;
         // getting the index of the right child
